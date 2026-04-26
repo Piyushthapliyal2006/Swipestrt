@@ -7,6 +7,13 @@ module.exports = {
     "./pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  safelist: [
+    // Common layout utilities
+    {
+      pattern: /^(flex|grid|flex-col|flex-row|items|justify|gap|p|m|w|h|text|bg|border|rounded|shadow|duration|transition|hover|focus|dark|md|lg|container)-.*/,
+      variants: ["hover", "focus", "dark", "md", "lg", "xl"],
+    },
+  ],
   theme: {
     container: {
       center: true,
