@@ -34,6 +34,7 @@
     "react-dom": "^18",
     "react-hook-form": "^7.48.2",
     "react-image-crop": "^11.0.5",
+    "semver": "^7.7.4",
     "tailwind-merge": "^2.1.0",
     "tailwindcss-animate": "^1.0.7",
     "three": "^0.158.0",

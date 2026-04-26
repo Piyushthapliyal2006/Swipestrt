@@ -13,6 +13,7 @@ import { Badge } from "@/components/ui/badge"
 import { useTheme } from "next-themes"
 import UserDropdown from "@/components/user-dropdown"
 import { DottedSurface } from "@/components/ui/dotted-surface"
+import { GLSLHills } from "@/components/GLSLHills"
 
 export default function LandingPage() {
   const [isScrolled, setIsScrolled] = useState(false)
@@ -104,8 +105,9 @@ export default function LandingPage() {
 
   return (
     <div className="flex min-h-[100dvh] flex-col relative" ref={topRef}>
-      {/* Animated Dotted Surface Background */}
-      <DottedSurface />
+      {/* Animated GLSLHills Background */}
+      <GLSLHills />
+      {/* <DottedSurface /> */}
 
       <header
         className={`sticky top-0 z-50 w-full backdrop-blur-lg transition-all duration-300 ${isScrolled ? "bg-background/80 shadow-sm" : "bg-transparent"}`}
@@ -1303,7 +1305,7 @@ export default function LandingPage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="rounded-full h-12 px-8 text-base bg-transparent border-white text-white hover:bg-white/10"
+                  className="rounded-full h-12 px-8 text-base bg-transparent border-primary-foreground text-primary-foreground hover:bg-primary-foreground/10"
                 >
                   Explore More
                 </Button>
