@@ -1,20 +1,19 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
-import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { ChevronLeft, Upload, User, Mail, Github, Linkedin, Twitter, Instagram } from "lucide-react"
-import { motion } from "framer-motion"
+import { Upload, User, Mail, Github, Linkedin, Twitter, Instagram } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useToast } from "@/hooks/use-toast"
-import { ThemeToggle } from "@/components/theme-toggle"
+import AuthLayout from "@/components/ui/auth-layout"
+import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
 
 export default function FounderRegistrationPage() {
   const [formData, setFormData] = useState({
@@ -165,255 +164,220 @@ export default function FounderRegistrationPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="w-full py-4 px-6 flex items-center justify-between border-b border-border/40 bg-background/80 backdrop-blur-sm">
-        <Link href="/signup/role" className="flex items-center gap-2">
-          <ChevronLeft className="size-4" />
-          <span>Back to Role Selection</span>
-        </Link>
-        <div className="flex items-center gap-2 font-bold">
-          <Image src="/images/swipestart-logo.png" alt="SwipeStart Logo" width={32} height={32} className="size-8" />
-          <span>SwipeStart</span>
-        </div>
-        <ThemeToggle />
-      </header>
+    <AuthLayout>
+      <CardHeader className="space-y-1 text-center pb-4">
+        <CardTitle className="text-2xl text-zinc-50">Founder Profile</CardTitle>
+        <CardDescription className="text-zinc-400">
+          Complete your profile to find the perfect co-founder
+        </CardDescription>
+      </CardHeader>
 
-      <main className="flex-1 flex">
-        {/* Left side - Decorative */}
-        <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/90 to-primary/40"></div>
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
-
-          <div className="relative z-10 flex flex-col justify-center px-12 py-24 text-white">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <h2 className="text-5xl font-bold mb-6">
-                Complete Your
-                <br />
-                Founder Profile
-              </h2>
-              <p className="text-xl opacity-90 max-w-md">
-                Tell us more about yourself so we can match you with the perfect co-founder for your startup journey.
-              </p>
-            </motion.div>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="grid gap-5">
+          {/* Profile Picture Upload */}
+          <div className="flex flex-col items-center gap-3">
+            <div className="relative w-24 h-24 rounded-full overflow-hidden bg-zinc-950 flex items-center justify-center border-2 border-zinc-800">
+              {profileImagePreview ? (
+                <Image
+                  src={profileImagePreview || "/placeholder.svg"}
+                  alt="Profile Preview"
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <User className="size-10 text-zinc-600" />
+              )}
+            </div>
+            <div className="flex flex-col items-center">
+              <Label
+                htmlFor="profileImage"
+                className="cursor-pointer flex items-center gap-2 text-zinc-300 hover:text-zinc-100 transition-colors text-sm"
+              >
+                <Upload className="size-4" />
+                <span>Upload Profile Picture</span>
+              </Label>
+              <Input
+                id="profileImage"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleProfileImageChange}
+                disabled={isLoading}
+              />
+              {errors.profileImage && <p className="text-sm text-red-500 mt-1">{errors.profileImage}</p>}
+            </div>
           </div>
-        </div>
 
-        {/* Right side - Form */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="w-full max-w-md"
-          >
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold">Founder Profile</h1>
-              <p className="text-muted-foreground mt-2">Complete your profile to find the perfect co-founder</p>
+          <div className="relative">
+            <Separator className="bg-zinc-800" />
+          </div>
+
+          {/* Full Name */}
+          <div className="grid gap-2">
+            <Label htmlFor="fullName" className="text-zinc-300">Full Name</Label>
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+              <Input
+                id="fullName"
+                name="fullName"
+                type="text"
+                placeholder="Enter your full name"
+                value={formData.fullName}
+                onChange={handleChange}
+                className={`pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 ${errors.fullName ? "border-red-500" : ""}`}
+                disabled={isLoading}
+              />
+            </div>
+            {errors.fullName && <p className="text-sm text-red-500">{errors.fullName}</p>}
+          </div>
+
+          {/* Email */}
+          <div className="grid gap-2">
+            <Label htmlFor="email" className="text-zinc-300">Email</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="Enter your email"
+                value={formData.email}
+                onChange={handleChange}
+                className={`pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 ${errors.email ? "border-red-500" : ""}`}
+                disabled={isLoading}
+              />
+            </div>
+            {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+          </div>
+
+          {/* Experience */}
+          <div className="grid gap-2">
+            <Label htmlFor="experience" className="text-zinc-300">Experience</Label>
+            <Textarea
+              id="experience"
+              name="experience"
+              placeholder="Tell us about your professional background"
+              value={formData.experience}
+              onChange={handleChange}
+              className={`bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 min-h-[80px] ${errors.experience ? "border-red-500" : ""}`}
+              rows={3}
+              disabled={isLoading}
+            />
+            {errors.experience && <p className="text-sm text-red-500">{errors.experience}</p>}
+          </div>
+
+          {/* Social Media Links */}
+          <div className="grid gap-3">
+            <Label className="text-zinc-300">Social Links</Label>
+
+            <div className="relative">
+              <Linkedin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+              <Input
+                id="linkedin"
+                name="linkedin"
+                type="url"
+                placeholder="LinkedIn URL"
+                value={formData.linkedin}
+                onChange={handleChange}
+                className="pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600"
+                disabled={isLoading}
+              />
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Profile Picture Upload */}
-              <div className="flex flex-col items-center gap-4 mb-6">
-                <div className="relative w-32 h-32 rounded-full overflow-hidden bg-muted flex items-center justify-center border-2 border-border">
-                  {profileImagePreview ? (
-                    <Image
-                      src={profileImagePreview || "/placeholder.svg"}
-                      alt="Profile Preview"
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <User className="size-16 text-muted-foreground" />
-                  )}
-                </div>
-                <div className="flex flex-col items-center">
-                  <Label
-                    htmlFor="profileImage"
-                    className="cursor-pointer flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
-                  >
-                    <Upload className="size-4" />
-                    <span>Upload Profile Picture</span>
-                  </Label>
-                  <Input
-                    id="profileImage"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleProfileImageChange}
-                    disabled={isLoading}
-                  />
-                  {errors.profileImage && <p className="text-sm text-red-500 mt-1">{errors.profileImage}</p>}
-                </div>
+            <div className="relative">
+              <Twitter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+              <Input
+                id="twitter"
+                name="twitter"
+                type="url"
+                placeholder="Twitter URL"
+                value={formData.twitter}
+                onChange={handleChange}
+                className="pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600"
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="relative">
+              <Github className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+              <Input
+                id="github"
+                name="github"
+                type="url"
+                placeholder="GitHub URL"
+                value={formData.github}
+                onChange={handleChange}
+                className="pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600"
+                disabled={isLoading}
+              />
+            </div>
+
+            <div className="relative">
+              <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+              <Input
+                id="instagram"
+                name="instagram"
+                type="url"
+                placeholder="Instagram URL"
+                value={formData.instagram}
+                onChange={handleChange}
+                className="pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600"
+                disabled={isLoading}
+              />
+            </div>
+          </div>
+
+          {/* Current Status */}
+          <div className="grid gap-3">
+            <Label className="text-zinc-300">Current Status</Label>
+            <RadioGroup
+              defaultValue={formData.currentStatus}
+              onValueChange={(value) => handleRadioChange("currentStatus", value)}
+              className="flex flex-col space-y-2"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="founder" id="founder" className="border-zinc-700 text-zinc-50" />
+                <Label htmlFor="founder" className="cursor-pointer text-zinc-400">
+                  Founder
+                </Label>
               </div>
-
-              {/* Full Name */}
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <div className="relative">
-                  <Input
-                    id="fullName"
-                    name="fullName"
-                    type="text"
-                    placeholder="Enter your full name"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    className={`pl-10 ${errors.fullName ? "border-red-500" : ""}`}
-                    disabled={isLoading}
-                  />
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                </div>
-                {errors.fullName && <p className="text-sm text-red-500">{errors.fullName}</p>}
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="entrepreneur" id="entrepreneur" className="border-zinc-700 text-zinc-50" />
+                <Label htmlFor="entrepreneur" className="cursor-pointer text-zinc-400">
+                  Entrepreneur
+                </Label>
               </div>
+            </RadioGroup>
+          </div>
 
-              {/* Email */}
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <div className="relative">
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="Enter your email address"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className={`pl-10 ${errors.email ? "border-red-500" : ""}`}
-                    disabled={isLoading}
-                  />
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                </div>
-                {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+          {/* Co-founder Type Preference */}
+          <div className="grid gap-3">
+            <Label className="text-zinc-300">Co-founder Preference</Label>
+            <RadioGroup
+              defaultValue={formData.cofounderType}
+              onValueChange={(value) => handleRadioChange("cofounderType", value)}
+              className="flex flex-col space-y-2"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="technical" id="technical" className="border-zinc-700 text-zinc-50" />
+                <Label htmlFor="technical" className="cursor-pointer text-zinc-400">
+                  Technical Co-founder
+                </Label>
               </div>
-
-              {/* Experience */}
-              <div className="space-y-2">
-                <Label htmlFor="experience">Experience</Label>
-                <Textarea
-                  id="experience"
-                  name="experience"
-                  placeholder="Tell us about your professional experience and background"
-                  value={formData.experience}
-                  onChange={handleChange}
-                  className={errors.experience ? "border-red-500" : ""}
-                  rows={4}
-                  disabled={isLoading}
-                />
-                {errors.experience && <p className="text-sm text-red-500">{errors.experience}</p>}
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="non-technical" id="non-technical" className="border-zinc-700 text-zinc-50" />
+                <Label htmlFor="non-technical" className="cursor-pointer text-zinc-400">
+                  Non-Technical Co-founder
+                </Label>
               </div>
+            </RadioGroup>
+          </div>
 
-              {/* Social Media Links */}
-              <div className="space-y-4">
-                <Label>Social Media Links</Label>
-
-                <div className="relative">
-                  <Input
-                    id="linkedin"
-                    name="linkedin"
-                    type="url"
-                    placeholder="LinkedIn URL"
-                    value={formData.linkedin}
-                    onChange={handleChange}
-                    className="pl-10"
-                    disabled={isLoading}
-                  />
-                  <Linkedin className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                </div>
-
-                <div className="relative">
-                  <Input
-                    id="twitter"
-                    name="twitter"
-                    type="url"
-                    placeholder="Twitter URL"
-                    value={formData.twitter}
-                    onChange={handleChange}
-                    className="pl-10"
-                    disabled={isLoading}
-                  />
-                  <Twitter className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                </div>
-
-                <div className="relative">
-                  <Input
-                    id="github"
-                    name="github"
-                    type="url"
-                    placeholder="GitHub URL"
-                    value={formData.github}
-                    onChange={handleChange}
-                    className="pl-10"
-                    disabled={isLoading}
-                  />
-                  <Github className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                </div>
-
-                <div className="relative">
-                  <Input
-                    id="instagram"
-                    name="instagram"
-                    type="url"
-                    placeholder="Instagram URL"
-                    value={formData.instagram}
-                    onChange={handleChange}
-                    className="pl-10"
-                    disabled={isLoading}
-                  />
-                  <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                </div>
-              </div>
-
-              {/* Current Status */}
-              <div className="space-y-3">
-                <Label>Current Status</Label>
-                <RadioGroup
-                  defaultValue={formData.currentStatus}
-                  onValueChange={(value) => handleRadioChange("currentStatus", value)}
-                  className="flex flex-col space-y-2"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="founder" id="founder" />
-                    <Label htmlFor="founder" className="cursor-pointer">
-                      Founder
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="entrepreneur" id="entrepreneur" />
-                    <Label htmlFor="entrepreneur" className="cursor-pointer">
-                      Entrepreneur
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              {/* Co-founder Type Preference */}
-              <div className="space-y-3">
-                <Label>Co-founder Preference</Label>
-                <RadioGroup
-                  defaultValue={formData.cofounderType}
-                  onValueChange={(value) => handleRadioChange("cofounderType", value)}
-                  className="flex flex-col space-y-2"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="technical" id="technical" />
-                    <Label htmlFor="technical" className="cursor-pointer">
-                      Technical Co-founder
-                    </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="non-technical" id="non-technical" />
-                    <Label htmlFor="non-technical" className="cursor-pointer">
-                      Non-Technical Co-founder
-                    </Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Completing Registration..." : "Complete Registration"}
-              </Button>
-            </form>
-          </motion.div>
-        </div>
-      </main>
-    </div>
+          <Button type="submit" className="w-full h-10 mt-1 rounded-lg bg-zinc-50 text-zinc-900 hover:bg-zinc-200" disabled={isLoading}>
+            {isLoading ? "Completing Registration..." : "Complete Registration"}
+          </Button>
+        </form>
+      </CardContent>
+    </AuthLayout>
   )
 }

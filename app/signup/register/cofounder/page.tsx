@@ -1,19 +1,18 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect } from "react"
-import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { ChevronLeft, Upload, User, Mail, Github, Linkedin, Twitter, Instagram } from "lucide-react"
-import { motion } from "framer-motion"
+import { Upload, User, Mail, Github, Linkedin, Twitter, Instagram } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
-import { ThemeToggle } from "@/components/theme-toggle"
+import AuthLayout from "@/components/ui/auth-layout"
+import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
 
 export default function CofounderRegistrationPage() {
   const [formData, setFormData] = useState({
@@ -174,259 +173,222 @@ export default function CofounderRegistrationPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="w-full py-4 px-6 flex items-center justify-between border-b border-border/40 bg-background/80 backdrop-blur-sm">
-        <Link href="/signup/role" className="flex items-center gap-2">
-          <ChevronLeft className="size-4" />
-          <span>Back to Role Selection</span>
-        </Link>
-        <div className="flex items-center gap-2 font-bold">
-          <Image src="/images/swipestart-logo.png" alt="SwipeStart Logo" width={32} height={32} className="size-8" />
-          <span>SwipeStart</span>
-        </div>
-        <ThemeToggle />
-      </header>
+    <AuthLayout>
+      <CardHeader className="space-y-1 text-center pb-4">
+        <CardTitle className="text-2xl text-zinc-50">Co-founder Profile</CardTitle>
+        <CardDescription className="text-zinc-400">
+          Complete your profile to find the perfect startup opportunity
+        </CardDescription>
+      </CardHeader>
 
-      <main className="flex-1 flex">
-        {/* Left side - Decorative */}
-        <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/90 to-primary/40"></div>
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
-
-          <div className="relative z-10 flex flex-col justify-center px-12 py-24 text-white">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <h2 className="text-5xl font-bold mb-6">
-                Complete Your
-                <br />
-                Co-founder Profile
-              </h2>
-              <p className="text-xl opacity-90 max-w-md">
-                Tell us more about yourself so we can match you with the perfect founder and startup opportunity.
-              </p>
-            </motion.div>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="grid gap-5">
+          {/* Profile Picture Upload */}
+          <div className="flex flex-col items-center gap-3">
+            <div className="relative w-24 h-24 rounded-full overflow-hidden bg-zinc-950 flex items-center justify-center border-2 border-zinc-800">
+              {profileImagePreview ? (
+                <Image
+                  src={profileImagePreview || "/placeholder.svg"}
+                  alt="Profile Preview"
+                  fill
+                  className="object-cover"
+                />
+              ) : (
+                <User className="size-10 text-zinc-600" />
+              )}
+            </div>
+            <div className="flex flex-col items-center">
+              <Label
+                htmlFor="profileImage"
+                className="cursor-pointer flex items-center gap-2 text-zinc-300 hover:text-zinc-100 transition-colors text-sm"
+              >
+                <Upload className="size-4" />
+                <span>Upload Profile Picture</span>
+              </Label>
+              <Input
+                id="profileImage"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleProfileImageChange}
+                disabled={isLoading}
+              />
+              {errors.profileImage && <p className="text-sm text-red-500 mt-1">{errors.profileImage}</p>}
+            </div>
           </div>
-        </div>
 
-        {/* Right side - Form */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="w-full max-w-md"
-          >
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold">Co-founder Profile</h1>
-              <p className="text-muted-foreground mt-2">
-                Complete your profile to find the perfect startup opportunity
-              </p>
+          <div className="relative">
+            <Separator className="bg-zinc-800" />
+          </div>
+
+          {/* Full Name */}
+          <div className="grid gap-2">
+            <Label htmlFor="fullName" className="text-zinc-300">Full Name</Label>
+            <div className="relative">
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+              <Input
+                id="fullName"
+                name="fullName"
+                type="text"
+                placeholder="Enter your full name"
+                value={formData.fullName}
+                onChange={handleChange}
+                className={`pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 ${errors.fullName ? "border-red-500" : ""}`}
+                disabled={isLoading}
+              />
+            </div>
+            {errors.fullName && <p className="text-sm text-red-500">{errors.fullName}</p>}
+          </div>
+
+          {/* Email */}
+          <div className="grid gap-2">
+            <Label htmlFor="email" className="text-zinc-300">Email</Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+              <Input
+                id="email"
+                name="email"
+                type="email"
+                placeholder="Enter your email"
+                value={formData.email}
+                onChange={handleChange}
+                className={`pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 ${errors.email ? "border-red-500" : ""}`}
+                disabled={isLoading}
+              />
+            </div>
+            {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
+          </div>
+
+          {/* About */}
+          <div className="grid gap-2">
+            <Label htmlFor="about" className="text-zinc-300">About</Label>
+            <Textarea
+              id="about"
+              name="about"
+              placeholder="Tell us about yourself and what you bring to a startup"
+              value={formData.about}
+              onChange={handleChange}
+              className={`bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 min-h-[80px] ${errors.about ? "border-red-500" : ""}`}
+              rows={3}
+              disabled={isLoading}
+            />
+            {errors.about && <p className="text-sm text-red-500">{errors.about}</p>}
+          </div>
+
+          {/* Interests */}
+          <div className="grid gap-2">
+            <Label htmlFor="interests" className="text-zinc-300">Interests</Label>
+            <Textarea
+              id="interests"
+              name="interests"
+              placeholder="What industries, technologies, or problems interest you?"
+              value={formData.interests}
+              onChange={handleChange}
+              className={`bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 min-h-[80px] ${errors.interests ? "border-red-500" : ""}`}
+              rows={3}
+              disabled={isLoading}
+            />
+            {errors.interests && <p className="text-sm text-red-500">{errors.interests}</p>}
+          </div>
+
+          {/* Experience */}
+          <div className="grid gap-2">
+            <Label htmlFor="experience" className="text-zinc-300">Experience</Label>
+            <Textarea
+              id="experience"
+              name="experience"
+              placeholder="Tell us about your professional background"
+              value={formData.experience}
+              onChange={handleChange}
+              className={`bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 min-h-[80px] ${errors.experience ? "border-red-500" : ""}`}
+              rows={3}
+              disabled={isLoading}
+            />
+            {errors.experience && <p className="text-sm text-red-500">{errors.experience}</p>}
+          </div>
+
+          {/* Social Media Links */}
+          <div className="grid gap-3">
+            <Label className="text-zinc-300">Social Links</Label>
+
+            <div className="relative">
+              <Linkedin className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+              <Input
+                id="linkedin"
+                name="linkedin"
+                type="url"
+                placeholder="LinkedIn URL"
+                value={formData.linkedin}
+                onChange={handleChange}
+                className="pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600"
+                disabled={isLoading}
+              />
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Profile Picture Upload */}
-              <div className="flex flex-col items-center gap-4 mb-6">
-                <div className="relative w-32 h-32 rounded-full overflow-hidden bg-muted flex items-center justify-center border-2 border-border">
-                  {profileImagePreview ? (
-                    <Image
-                      src={profileImagePreview || "/placeholder.svg"}
-                      alt="Profile Preview"
-                      fill
-                      className="object-cover"
-                    />
-                  ) : (
-                    <User className="size-16 text-muted-foreground" />
-                  )}
-                </div>
-                <div className="flex flex-col items-center">
-                  <Label
-                    htmlFor="profileImage"
-                    className="cursor-pointer flex items-center gap-2 text-primary hover:text-primary/80 transition-colors"
-                  >
-                    <Upload className="size-4" />
-                    <span>Upload Profile Picture</span>
-                  </Label>
-                  <Input
-                    id="profileImage"
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleProfileImageChange}
-                    disabled={isLoading}
-                  />
-                  {errors.profileImage && <p className="text-sm text-red-500 mt-1">{errors.profileImage}</p>}
-                </div>
-              </div>
+            <div className="relative">
+              <Twitter className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+              <Input
+                id="twitter"
+                name="twitter"
+                type="url"
+                placeholder="Twitter URL"
+                value={formData.twitter}
+                onChange={handleChange}
+                className="pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600"
+                disabled={isLoading}
+              />
+            </div>
 
-              {/* Full Name */}
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Full Name</Label>
-                <div className="relative">
-                  <Input
-                    id="fullName"
-                    name="fullName"
-                    type="text"
-                    placeholder="Enter your full name"
-                    value={formData.fullName}
-                    onChange={handleChange}
-                    className={`pl-10 ${errors.fullName ? "border-red-500" : ""}`}
-                    disabled={isLoading}
-                  />
-                  <User className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                </div>
-                {errors.fullName && <p className="text-sm text-red-500">{errors.fullName}</p>}
-              </div>
+            <div className="relative">
+              <Github className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+              <Input
+                id="github"
+                name="github"
+                type="url"
+                placeholder="GitHub URL"
+                value={formData.github}
+                onChange={handleChange}
+                className="pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600"
+                disabled={isLoading}
+              />
+            </div>
 
-              {/* Email */}
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <div className="relative">
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder="Enter your email address"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className={`pl-10 ${errors.email ? "border-red-500" : ""}`}
-                    disabled={isLoading}
-                  />
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                </div>
-                {errors.email && <p className="text-sm text-red-500">{errors.email}</p>}
-              </div>
+            <div className="relative">
+              <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+              <Input
+                id="instagram"
+                name="instagram"
+                type="url"
+                placeholder="Instagram URL"
+                value={formData.instagram}
+                onChange={handleChange}
+                className="pl-10 bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600"
+                disabled={isLoading}
+              />
+            </div>
+          </div>
 
-              {/* About */}
-              <div className="space-y-2">
-                <Label htmlFor="about">About</Label>
-                <Textarea
-                  id="about"
-                  name="about"
-                  placeholder="Tell us about yourself and what you bring to a startup"
-                  value={formData.about}
-                  onChange={handleChange}
-                  className={errors.about ? "border-red-500" : ""}
-                  rows={3}
-                  disabled={isLoading}
-                />
-                {errors.about && <p className="text-sm text-red-500">{errors.about}</p>}
-              </div>
+          {/* Current Status */}
+          <div className="grid gap-2">
+            <Label htmlFor="currentStatus" className="text-zinc-300">Current Status</Label>
+            <Input
+              id="currentStatus"
+              name="currentStatus"
+              type="text"
+              placeholder="e.g., Employed, Freelancer, Student, etc."
+              value={formData.currentStatus}
+              onChange={handleChange}
+              className={`bg-zinc-950 border-zinc-800 text-zinc-50 placeholder:text-zinc-600 ${errors.currentStatus ? "border-red-500" : ""}`}
+              disabled={isLoading}
+            />
+            {errors.currentStatus && <p className="text-sm text-red-500">{errors.currentStatus}</p>}
+          </div>
 
-              {/* Interests */}
-              <div className="space-y-2">
-                <Label htmlFor="interests">Interests</Label>
-                <Textarea
-                  id="interests"
-                  name="interests"
-                  placeholder="What industries, technologies, or problems are you interested in?"
-                  value={formData.interests}
-                  onChange={handleChange}
-                  className={errors.interests ? "border-red-500" : ""}
-                  rows={3}
-                  disabled={isLoading}
-                />
-                {errors.interests && <p className="text-sm text-red-500">{errors.interests}</p>}
-              </div>
-
-              {/* Experience */}
-              <div className="space-y-2">
-                <Label htmlFor="experience">Experience</Label>
-                <Textarea
-                  id="experience"
-                  name="experience"
-                  placeholder="Tell us about your professional experience and background"
-                  value={formData.experience}
-                  onChange={handleChange}
-                  className={errors.experience ? "border-red-500" : ""}
-                  rows={3}
-                  disabled={isLoading}
-                />
-                {errors.experience && <p className="text-sm text-red-500">{errors.experience}</p>}
-              </div>
-
-              {/* Social Media Links */}
-              <div className="space-y-4">
-                <Label>Social Media Links</Label>
-
-                <div className="relative">
-                  <Input
-                    id="linkedin"
-                    name="linkedin"
-                    type="url"
-                    placeholder="LinkedIn URL"
-                    value={formData.linkedin}
-                    onChange={handleChange}
-                    className="pl-10"
-                    disabled={isLoading}
-                  />
-                  <Linkedin className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                </div>
-
-                <div className="relative">
-                  <Input
-                    id="twitter"
-                    name="twitter"
-                    type="url"
-                    placeholder="Twitter URL"
-                    value={formData.twitter}
-                    onChange={handleChange}
-                    className="pl-10"
-                    disabled={isLoading}
-                  />
-                  <Twitter className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                </div>
-
-                <div className="relative">
-                  <Input
-                    id="github"
-                    name="github"
-                    type="url"
-                    placeholder="GitHub URL"
-                    value={formData.github}
-                    onChange={handleChange}
-                    className="pl-10"
-                    disabled={isLoading}
-                  />
-                  <Github className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                </div>
-
-                <div className="relative">
-                  <Input
-                    id="instagram"
-                    name="instagram"
-                    type="url"
-                    placeholder="Instagram URL"
-                    value={formData.instagram}
-                    onChange={handleChange}
-                    className="pl-10"
-                    disabled={isLoading}
-                  />
-                  <Instagram className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                </div>
-              </div>
-
-              {/* Current Status */}
-              <div className="space-y-2">
-                <Label htmlFor="currentStatus">Current Status</Label>
-                <Input
-                  id="currentStatus"
-                  name="currentStatus"
-                  type="text"
-                  placeholder="e.g., Employed, Freelancer, Student, etc."
-                  value={formData.currentStatus}
-                  onChange={handleChange}
-                  className={errors.currentStatus ? "border-red-500" : ""}
-                  disabled={isLoading}
-                />
-                {errors.currentStatus && <p className="text-sm text-red-500">{errors.currentStatus}</p>}
-              </div>
-
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Completing Registration..." : "Complete Registration"}
-              </Button>
-            </form>
-          </motion.div>
-        </div>
-      </main>
-    </div>
+          <Button type="submit" className="w-full h-10 mt-1 rounded-lg bg-zinc-50 text-zinc-900 hover:bg-zinc-200" disabled={isLoading}>
+            {isLoading ? "Completing Registration..." : "Complete Registration"}
+          </Button>
+        </form>
+      </CardContent>
+    </AuthLayout>
   )
 }

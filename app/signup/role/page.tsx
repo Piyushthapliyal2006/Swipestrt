@@ -1,14 +1,12 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
-import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { ChevronLeft, Briefcase, Users, CheckCircle2 } from "lucide-react"
-import { motion } from "framer-motion"
+import { Briefcase, Users, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
-import { ThemeToggle } from "@/components/theme-toggle"
+import AuthLayout from "@/components/ui/auth-layout"
+import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 
 export default function RoleSelectionPage() {
   const [selectedRole, setSelectedRole] = useState<"founder" | "cofounder" | null>(null)
@@ -65,116 +63,79 @@ export default function RoleSelectionPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="w-full py-4 px-6 flex items-center justify-between border-b border-border/40 bg-background/80 backdrop-blur-sm">
-        <Link href="/signup/verify" className="flex items-center gap-2">
-          <ChevronLeft className="size-4" />
-          <span>Back to Verification</span>
-        </Link>
-        <div className="flex items-center gap-2 font-bold">
-          <Image src="/images/swipestart-logo.png" alt="SwipeStart Logo" width={32} height={32} className="size-8" />
-          <span>SwipeStart</span>
-        </div>
-        <ThemeToggle />
-      </header>
+    <AuthLayout>
+      <CardHeader className="space-y-1 text-center pb-6">
+        <CardTitle className="text-2xl text-zinc-50">Choose Your Role</CardTitle>
+        <CardDescription className="text-zinc-400">
+          Almost there, <span className="text-zinc-300 font-medium">{username || "User"}</span>! Select your role to continue
+        </CardDescription>
+      </CardHeader>
 
-      <main className="flex-1 flex">
-        {/* Left side - Decorative */}
-        <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/90 to-primary/40"></div>
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
-
-          <div className="relative z-10 flex flex-col justify-center px-12 py-24 text-white">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <h2 className="text-5xl font-bold mb-6">
-                Almost There,
-                <br />
-                {username || "User"}!
-              </h2>
-              <p className="text-xl opacity-90 max-w-md">
-                Tell us about your role so we can personalize your experience and connect you with the right people.
+      <CardContent className="grid gap-4">
+        <div
+          className={`relative p-5 border rounded-xl cursor-pointer transition-all ${
+            selectedRole === "founder"
+              ? "border-zinc-500 bg-zinc-800/50"
+              : "border-zinc-800 bg-zinc-950/50 hover:border-zinc-700"
+          }`}
+          onClick={() => setSelectedRole("founder")}
+        >
+          <div className="flex items-start gap-4">
+            <div
+              className={`p-2 rounded-full ${
+                selectedRole === "founder" ? "bg-zinc-50 text-zinc-900" : "bg-zinc-900 text-zinc-400"
+              }`}
+            >
+              <Briefcase className="size-5" />
+            </div>
+            <div>
+              <h3 className={`font-medium text-lg mb-1 ${selectedRole === "founder" ? "text-zinc-50" : "text-zinc-300"}`}>I'm a Founder</h3>
+              <p className="text-zinc-500 text-sm leading-relaxed">
+                I have a startup idea or business and I'm looking for a co-founder.
               </p>
-            </motion.div>
+            </div>
+            {selectedRole === "founder" && (
+              <CheckCircle2 className="absolute top-4 right-4 size-5 text-zinc-50" />
+            )}
           </div>
         </div>
 
-        {/* Right side - Form */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="w-full max-w-md"
-          >
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold">Choose Your Role</h1>
-              <p className="text-muted-foreground mt-2">Select the option that best describes your current situation</p>
+        <div
+          className={`relative p-5 border rounded-xl cursor-pointer transition-all ${
+            selectedRole === "cofounder"
+              ? "border-zinc-500 bg-zinc-800/50"
+              : "border-zinc-800 bg-zinc-950/50 hover:border-zinc-700"
+          }`}
+          onClick={() => setSelectedRole("cofounder")}
+        >
+          <div className="flex items-start gap-4">
+            <div
+              className={`p-2 rounded-full ${
+                selectedRole === "cofounder" ? "bg-zinc-50 text-zinc-900" : "bg-zinc-900 text-zinc-400"
+              }`}
+            >
+              <Users className="size-5" />
             </div>
-
-            <div className="space-y-6">
-              <div
-                className={`relative p-6 border rounded-lg cursor-pointer transition-all ${
-                  selectedRole === "founder"
-                    ? "border-primary bg-primary/5 dark:bg-primary/10"
-                    : "border-border hover:border-primary/50"
-                }`}
-                onClick={() => setSelectedRole("founder")}
-              >
-                <div className="flex items-start gap-4">
-                  <div
-                    className={`p-2 rounded-full ${
-                      selectedRole === "founder" ? "bg-primary text-primary-foreground" : "bg-muted"
-                    }`}
-                  >
-                    <Briefcase className="size-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-lg mb-1">I'm a Founder</h3>
-                    <p className="text-muted-foreground text-sm">
-                      I have a startup idea or existing business and I'm looking for a co-founder to join me.
-                    </p>
-                  </div>
-                  {selectedRole === "founder" && (
-                    <CheckCircle2 className="absolute top-4 right-4 size-5 text-primary" />
-                  )}
-                </div>
-              </div>
-
-              <div
-                className={`relative p-6 border rounded-lg cursor-pointer transition-all ${
-                  selectedRole === "cofounder"
-                    ? "border-primary bg-primary/5 dark:bg-primary/10"
-                    : "border-border hover:border-primary/50"
-                }`}
-                onClick={() => setSelectedRole("cofounder")}
-              >
-                <div className="flex items-start gap-4">
-                  <div
-                    className={`p-2 rounded-full ${
-                      selectedRole === "cofounder" ? "bg-primary text-primary-foreground" : "bg-muted"
-                    }`}
-                  >
-                    <Users className="size-5" />
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-lg mb-1">I'm a Co-Founder</h3>
-                    <p className="text-muted-foreground text-sm">
-                      I want to join an existing startup and contribute my skills and expertise.
-                    </p>
-                  </div>
-                  {selectedRole === "cofounder" && (
-                    <CheckCircle2 className="absolute top-4 right-4 size-5 text-primary" />
-                  )}
-                </div>
-              </div>
-
-              <Button onClick={handleContinue} className="w-full" disabled={isLoading || !selectedRole}>
-                {isLoading ? "Processing..." : "Continue"}
-              </Button>
+            <div>
+              <h3 className={`font-medium text-lg mb-1 ${selectedRole === "cofounder" ? "text-zinc-50" : "text-zinc-300"}`}>I'm a Co-Founder</h3>
+              <p className="text-zinc-500 text-sm leading-relaxed">
+                I want to join an existing startup and contribute my skills.
+              </p>
             </div>
-          </motion.div>
+            {selectedRole === "cofounder" && (
+              <CheckCircle2 className="absolute top-4 right-4 size-5 text-zinc-50" />
+            )}
+          </div>
         </div>
-      </main>
-    </div>
+
+        <Button 
+          onClick={handleContinue} 
+          className="w-full h-10 mt-2 rounded-lg bg-zinc-50 text-zinc-900 hover:bg-zinc-200" 
+          disabled={isLoading || !selectedRole}
+        >
+          {isLoading ? "Processing..." : "Continue"}
+        </Button>
+      </CardContent>
+    </AuthLayout>
   )
 }

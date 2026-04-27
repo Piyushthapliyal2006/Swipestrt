@@ -1,70 +1,60 @@
-"use client"
-
-import { useState } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { ChevronLeft, Check } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { motion } from "framer-motion"
-import { ThemeToggle } from "@/components/theme-toggle"
+"use client";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { TimelineContent } from "@/components/ui/timeline-animation";
+import {VerticalCutReveal} from "@/components/ui/vertical-cut-reveal";
+import { useRef } from "react";
+import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
+import Image from "next/image";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export default function PricingPage() {
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("monthly")
+  const pricingRef = useRef<HTMLDivElement>(null);
+  const revealVariants = {
+    visible: (i: number) => ({
+      y: 0,
+      opacity: 1,
+      filter: "blur(0px)",
+      transition: {
+        delay: i * 0.4,
+        duration: 0.5,
+      },
+    }),
+    hidden: {
+      filter: "blur(10px)",
+      y: -20,
+      opacity: 0,
+    },
+  };
 
-  // Define pricing plans with both monthly and yearly prices
-  const plans = [
-    {
-      name: "Simple",
-      monthlyPrice: "Free",
-      yearlyPrice: "Free",
-      description: "Free plan for all users.",
-      bgColor: "bg-pink-300",
-      features: [
-        "Store up to 20 businesses",
-        "2 collaborators",
-        "Unlimited collaboration",
-        "End to end encryption",
-        "Mac, PC, Android, iOS, and Browser",
-      ],
-      cta: "Get Started Free",
-    },
-    {
-      name: "Efficient",
-      monthlyPrice: "$15",
-      yearlyPrice: "$12",
-      description: "Ideal for individual creators.",
-      bgColor: "bg-teal-300",
-      features: [
-        "Everything in Simple",
-        "512GB of business storage",
-        "Unlimited management",
-        "Unlimited collaborators",
-        "Links with password protection",
-      ],
-      cta: "Get Efficient Plan",
-    },
-    {
-      name: "Team",
-      monthlyPrice: "$25",
-      yearlyPrice: "$20",
-      description: "Small teams with up to 10 users.",
-      bgColor: "bg-yellow-400",
-      features: ["Everything in Efficient", "Unlimited team members", "Custom storage plans", "White label branding"],
-      cta: "Get Team Plan",
-    },
-  ]
+  const basicFeatures = [
+    "Access of any 3 apps",
+    "Up to 10 artboards",
+    "Up to 5 fonts and graphics",
+    "Call forwarding",
+  ];
+
+  const professionalFeatures = [
+    "Access of any 10 apps",
+    "Up to 30 artboards",
+    "Up to 100 fonts and graphics",
+    "Call forwarding and scheduling",
+    "15 TB cloud storage",
+  ];
+
+  const enterpriseFeatures = [
+    "Access of all apps",
+    "Unlimited artboards",
+    "Unlimited fonts and graphics",
+    "Call forwarding and scheduling",
+  ];
 
   return (
     <div className="flex min-h-[100dvh] flex-col bg-background text-foreground relative">
       {/* Background with grid pattern */}
       <div className="absolute inset-0 -z-10">
-        {/* Grid pattern with more visible lines */}
         <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border))_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border))_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
-
-        {/* Radial gradient overlay */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,hsl(var(--muted))_30%,transparent_80%)]"></div>
-
-        {/* Additional ambient light effects */}
         <div className="absolute top-0 left-1/4 w-1/2 h-1/2 bg-primary/5 rounded-full blur-[100px]"></div>
         <div className="absolute bottom-0 right-1/4 w-1/2 h-1/2 bg-primary/5 rounded-full blur-[100px]"></div>
       </div>
@@ -83,73 +73,144 @@ export default function PricingPage() {
         </div>
       </header>
 
-      <main className="flex-1 container py-16 md:py-24">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="text-center max-w-3xl mx-auto mb-16"
-        >
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8">Pricing</h1>
-
-          <div className="flex items-center justify-center gap-4 bg-muted/70 rounded-full p-1.5 w-fit mx-auto border border-border">
-            <span
-              className={`px-4 py-1.5 rounded-full cursor-pointer transition-colors ${billingCycle === "monthly" ? "bg-background text-foreground" : "text-muted-foreground hover:text-foreground"}`}
-              onClick={() => setBillingCycle("monthly")}
-            >
-              Monthly
-            </span>
-            <div className="relative w-12 h-6 bg-muted rounded-full border border-border">
-              <div
-                className={`absolute top-1 w-4 h-4 rounded-full bg-background transition-all ${billingCycle === "yearly" ? "left-7" : "left-1"}`}
-              ></div>
-            </div>
-            <div className="flex items-center">
-              <span
-                className={`px-4 py-1.5 rounded-full cursor-pointer transition-colors ${billingCycle === "yearly" ? "bg-background text-foreground" : "text-muted-foreground hover:text-foreground"}`}
-                onClick={() => setBillingCycle("yearly")}
+      <section
+        className="py-16 px-4 w-full relative min-h-screen"
+        ref={pricingRef}
+      >
+        <div className="absolute bottom-0 left-0 right-0 top-0 bg-[linear-gradient(to_right,#ffffff1a_1px,transparent_1px),linear-gradient(to_bottom,#ffffff1a_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_40%_50%_at_50%_50%,#000_70%,transparent_110%)] pointer-events-none"></div>
+        <div className="max-w-6xl mx-auto relative z-10 mt-10">
+          <article className="text-center mb-12">
+            <h2 className="text-4xl font-semibold text-foreground mb-4">
+              <VerticalCutReveal
+                splitBy="words"
+                staggerDuration={0.15}
+                staggerFrom="first"
+                reverse={true}
+                containerClassName="justify-center"
+                transition={{
+                  type: "spring",
+                  stiffness: 250,
+                  damping: 40,
+                  delay: 0, // First element
+                }}
               >
-                Yearly
-              </span>
-              <span className="text-sm text-yellow-400 ml-1">(Save 20%)</span>
-            </div>
-          </div>
-        </motion.div>
+                Start 14 Days Free-Trial
+              </VerticalCutReveal>
+            </h2>
 
-        <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          {plans.map((plan, index) => (
-            <motion.div
-              key={plan.name}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 * (index + 1) }}
-              className={`${plan.bgColor} rounded-lg p-8 text-black shadow-xl hover:shadow-2xl transition-all hover:-translate-y-1`}
+            <TimelineContent
+              as="p"
+              animationNum={0}
+              timelineRef={pricingRef}
+              customVariants={revealVariants}
+              className="text-muted-foreground"
             >
-              <div className="mb-6">
-                <h3 className="text-lg font-medium mb-2">{plan.name}</h3>
-                <div className="flex items-baseline">
-                  <span className="text-5xl font-bold">
-                    {billingCycle === "monthly" ? plan.monthlyPrice : plan.yearlyPrice}
-                  </span>
-                  {plan.name !== "Simple" && <span className="text-sm ml-1">/month</span>}
-                </div>
-                <p className="text-sm">{plan.description}</p>
-              </div>
+              Get started today, no credit card required
+            </TimelineContent>
+          </article>
 
-              <ul className="space-y-3 mb-8">
-                {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-start">
-                    <Check className="mr-2 mt-0.5 size-5 flex-shrink-0" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
+          <div className="grid md:grid-cols-3 md:gap-8 gap-3 items-end">
+            {/* Basic Plan */}
+            <TimelineContent
+              as="div"
+              animationNum={1}
+              timelineRef={pricingRef}
+              customVariants={revealVariants}
+            >
+              <Card className="bg-white p-0 h-fit border-neutral-200">
+                <CardHeader className="text-left py-4 border-b bg-gray-100 border-neutral-300 rounded-xl">
+                  <h3 className="text-xl text-gray-900 mb-4">Basic</h3>
+                  <div className="flex justify-start items-end">
+                    <span className="text-4xl font-semibold text-gray-900">
+                      $16
+                    </span>
+                    <span className="text-gray-600">/user</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="pb-6">
+                  <ul className="space-y-3 mb-6 mt-4">
+                    {basicFeatures.map((feature, index) => (
+                      <li key={index} className="text-sm text-gray-700">
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  <button className="w-full p-3 rounded-xl bg-indigo-600 shadow-lg shadow-indigo-600 text-white hover:bg-indigo-700">
+                    Choose Basic
+                  </button>
+                </CardContent>
+              </Card>
+            </TimelineContent>
 
-              <Button className="w-full bg-black hover:bg-black/80 text-white">{plan.cta}</Button>
-            </motion.div>
-          ))}
+            {/* Professional Plan */}
+            <TimelineContent
+              as="div"
+              animationNum={2}
+              timelineRef={pricingRef}
+              customVariants={revealVariants}
+            >
+              <Card className="bg-indigo-700 p-0 rounded-lg shadow-lg relative h-fit border-neutral-200">
+                <CardHeader className="pb-6 bg-indigo-600 rounded-t-lg py-6">
+                  <div className="flex gap-2 justify-between">
+                    <h3 className="text-xl text-white mb-4">Professional</h3>
+                    <span className="text-white/60 px-2 py-1 text-xs">
+                      Popular
+                    </span>
+                  </div>
+                  <div className="w-full justify-start flex items-end">
+                    <span className="text-4xl font-semibold text-white">$24</span>
+                    <span className="text-purple-100">/month</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="pb-6">
+                  <ul className="space-y-3 mb-6 mt-4">
+                    {professionalFeatures.map((feature, index) => (
+                      <li key={index} className="text-sm text-white">
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  <button className="w-full p-3 border border-gray-800 shadow-lg shadow-black font-semibold  rounded-xl bg-black text-white hover:bg-gray-800">
+                    Choose Professional
+                  </button>
+                </CardContent>
+              </Card>
+            </TimelineContent>
+
+            {/* Enterprise Plan */}
+            <TimelineContent
+              as="div"
+              animationNum={3}
+              timelineRef={pricingRef}
+              customVariants={revealVariants}
+            >
+              <Card className="bg-white p-0 border-neutral-200">
+                <CardHeader className="text-left py-4 border-b bg-gray-100 rounded-xl border-neutral-300">
+                  <h3 className="text-xl text-gray-900 mb-4">Enterprise</h3>
+                  <div className="flex justify-start items-end">
+                    <span className="text-4xl font-semibold text-gray-900">
+                      $40
+                    </span>
+                    <span className="text-gray-600">/user</span>
+                  </div>
+                </CardHeader>
+                <CardContent className="pb-6">
+                  <ul className="space-y-3 mb-6 mt-4">
+                    {enterpriseFeatures.map((feature, index) => (
+                      <li key={index} className="text-sm text-gray-700">
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  <button className="w-full p-3 rounded-xl bg-indigo-600 shadow-lg shadow-indigo-600 text-white hover:bg-indigo-700">
+                    Choose Enterprise
+                  </button>
+                </CardContent>
+              </Card>
+            </TimelineContent>
+          </div>
         </div>
-      </main>
+      </section>
     </div>
-  )
+  );
 }

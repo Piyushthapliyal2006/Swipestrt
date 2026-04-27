@@ -1,16 +1,12 @@
 "use client"
 
 import type React from "react"
-
 import { useState, useEffect, useRef } from "react"
-import Link from "next/link"
-import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { ChevronLeft } from "lucide-react"
-import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
-import { ThemeToggle } from "@/components/theme-toggle"
+import AuthLayout from "@/components/ui/auth-layout"
+import { CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 
 export default function VerifyPage() {
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""))
@@ -148,94 +144,55 @@ export default function VerifyPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <header className="w-full py-4 px-6 flex items-center justify-between border-b border-border/40 bg-background/80 backdrop-blur-sm">
-        <Link href="/signup" className="flex items-center gap-2">
-          <ChevronLeft className="size-4" />
-          <span>Back to Sign Up</span>
-        </Link>
-        <div className="flex items-center gap-2 font-bold">
-          <Image src="/images/swipestart-logo.png" alt="SwipeStart Logo" width={32} height={32} className="size-8" />
-          <span>SwipeStart</span>
-        </div>
-        <ThemeToggle />
-      </header>
+    <AuthLayout>
+      <CardHeader className="space-y-1 text-center pb-6">
+        <CardTitle className="text-2xl text-zinc-50">Verify Phone</CardTitle>
+        <CardDescription className="text-zinc-400">
+          We've sent a verification code to <span className="font-medium text-zinc-300">{phone || "your phone"}</span>
+        </CardDescription>
+      </CardHeader>
 
-      <main className="flex-1 flex">
-        {/* Left side - Decorative */}
-        <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/90 to-primary/40"></div>
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff10_1px,transparent_1px),linear-gradient(to_bottom,#ffffff10_1px,transparent_1px)] bg-[size:4rem_4rem]"></div>
-
-          <div className="relative z-10 flex flex-col justify-center px-12 py-24 text-white">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <h2 className="text-5xl font-bold mb-6">
-                Verify Your
-                <br />
-                Phone Number
-              </h2>
-              <p className="text-xl opacity-90 max-w-md">
-                We've sent a verification code to your phone. Enter the code to continue your registration.
-              </p>
-            </motion.div>
-          </div>
+      <CardContent className="grid gap-6">
+        <div className="flex justify-center gap-2">
+          {otp.map((digit, index) => (
+            <input
+              key={index}
+              ref={(el) => { inputRefs.current[index] = el; }}
+              type="text"
+              inputMode="numeric"
+              maxLength={1}
+              value={digit}
+              onChange={(e) => handleChange(index, e.target.value)}
+              onKeyDown={(e) => handleKeyDown(index, e)}
+              onPaste={index === 0 ? handlePaste : undefined}
+              className="w-12 h-14 text-center text-xl font-bold rounded-md bg-zinc-950 border border-zinc-800 text-zinc-50 focus:border-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-500"
+              disabled={isLoading}
+            />
+          ))}
         </div>
 
-        {/* Right side - Form */}
-        <div className="w-full lg:w-1/2 flex items-center justify-center p-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="w-full max-w-md"
+        {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+
+        <Button 
+          onClick={verifyOtp} 
+          className="w-full h-10 rounded-lg bg-zinc-50 text-zinc-900 hover:bg-zinc-200" 
+          disabled={isLoading || otp.join("").length !== 6}
+        >
+          {isLoading ? "Verifying..." : "Verify Code"}
+        </Button>
+
+        <div className="text-center">
+          <p className="text-sm text-zinc-400 mb-2">Didn't receive the code?</p>
+          <Button
+            variant="link"
+            onClick={resendOtp}
+            disabled={countdown > 0 || isLoading}
+            className="text-zinc-300 hover:text-zinc-50 p-0 h-auto"
           >
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold">Phone Verification</h1>
-              <p className="text-muted-foreground mt-2">
-                We've sent a verification code to <span className="font-medium">{phone || "your phone"}</span>
-              </p>
-            </div>
-
-            <div className="space-y-6">
-              <div className="flex justify-center gap-2">
-                {otp.map((digit, index) => (
-                  <input
-                    key={index}
-                    ref={(el) => (inputRefs.current[index] = el)}
-                    type="text"
-                    inputMode="numeric"
-                    maxLength={1}
-                    value={digit}
-                    onChange={(e) => handleChange(index, e.target.value)}
-                    onKeyDown={(e) => handleKeyDown(index, e)}
-                    onPaste={index === 0 ? handlePaste : undefined}
-                    className="w-12 h-14 text-center text-xl font-bold border border-border rounded-md bg-background focus:border-primary focus:ring-1 focus:ring-primary focus:outline-none"
-                    disabled={isLoading}
-                  />
-                ))}
-              </div>
-
-              {error && <p className="text-sm text-red-500 text-center">{error}</p>}
-
-              <Button onClick={verifyOtp} className="w-full" disabled={isLoading || otp.join("").length !== 6}>
-                {isLoading ? "Verifying..." : "Verify Code"}
-              </Button>
-
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-2">Didn't receive the code?</p>
-                <Button
-                  variant="link"
-                  onClick={resendOtp}
-                  disabled={countdown > 0 || isLoading}
-                  className="text-primary p-0 h-auto"
-                >
-                  {countdown > 0 ? `Resend code in ${countdown}s` : "Resend code"}
-                </Button>
-              </div>
-            </div>
-          </motion.div>
+            {countdown > 0 ? `Resend code in ${countdown}s` : "Resend code"}
+          </Button>
         </div>
-      </main>
-    </div>
+      </CardContent>
+    </AuthLayout>
   )
 }
